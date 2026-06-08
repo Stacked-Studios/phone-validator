@@ -2,7 +2,7 @@ import { parsePhoneNumber, isValidPhoneNumber, getCountries } from '../min/index
 
 const CORS_HEADERS = {
 	'Access-Control-Allow-Origin': '*',
-	'Access-Control-Allow-Methods': 'GET, OPTIONS',
+	'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 	'Access-Control-Allow-Headers': 'Content-Type',
 }
 
@@ -13,16 +13,13 @@ function json(data, status = 200) {
 	})
 }
 
-function handleValidate(url) {
-	const phone = url.searchParams.get('phone')
-	const country = url.searchParams.get('country')?.toUpperCase() || undefined
-
+function validate(phone, country) {
 	if (!phone) {
-		return json({ error: 'Missing required query param: phone' }, 400)
+		return json({ error: 'Missing required param: phone' }, 400)
 	}
 
 	try {
-		const parsed = parsePhoneNumber(phone, country)
+		const parsed = parsePhoneNumber(phone, country?.toUpperCase())
 
 		if (!parsed) {
 			return json({ valid: false })
@@ -45,6 +42,20 @@ function handleValidate(url) {
 	}
 }
 
+async function handleValidate(request) {
+	const url = new URL(request.url)
+
+	if (request.method === 'POST') {
+		const body = await request.json().catch(() => null)
+		if (!body) {
+			return json({ error: 'Invalid JSON body' }, 400)
+		}
+		return validate(body.phone, body.country)
+	}
+
+	return validate(url.searchParams.get('phone'), url.searchParams.get('country'))
+}
+
 export default {
 	async fetch(request, env) {
 		const url = new URL(request.url)
@@ -54,7 +65,7 @@ export default {
 		}
 
 		if (url.pathname === '/api/validate') {
-			return handleValidate(url)
+			return handleValidate(request)
 		}
 
 		if (url.pathname === '/api/countries') {
