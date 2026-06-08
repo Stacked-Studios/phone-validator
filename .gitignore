@@ -26,6 +26,10 @@ npm-debug.log
 
 # browser builds
 /bundle/
+/website/libphonenumber-max.js
+
+# wrangler output
+dist/
 
 # metadata
 /metadata.json
@@ -64,4 +68,4 @@ npm-debug.log
 
 *.d.cts
 /max/index.d.ts
-/mobile/index.d.ts
+/mobile/index.d.tsdist
