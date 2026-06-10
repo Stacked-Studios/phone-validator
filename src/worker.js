@@ -1,4 +1,4 @@
-import { parsePhoneNumber, isValidPhoneNumber, getCountries } from '../min/index.js'
+import { parsePhoneNumber, isValidPhoneNumber, getCountries } from '../max/index.js'
 
 const CORS_HEADERS = {
 	'Access-Control-Allow-Origin': '*',
